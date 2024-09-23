@@ -72,6 +72,7 @@
             // 
             Temporizador.Enabled = true;
             Temporizador.Interval = 20;
+            Temporizador.Tick += GameTimerEvent;
             // 
             // Form1
             // 
@@ -86,6 +87,8 @@
             Name = "Form1";
             Text = "Jugador: 0   IA: 0";
             Load += Form1_Load;
+            KeyDown += KeyIsDown;
+            KeyUp += KeyIsUp;
             ((System.ComponentModel.ISupportInitialize)Jugador).EndInit();
             ((System.ComponentModel.ISupportInitialize)IA).EndInit();
             ((System.ComponentModel.ISupportInitialize)Pelota).EndInit();
