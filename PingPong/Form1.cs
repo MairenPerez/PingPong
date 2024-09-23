@@ -2,26 +2,18 @@ namespace PingPong
 {
     public partial class Form1 : Form
     {
-        // Velocidad de la pelota
         private int ballXSpeed = 4;
         private int ballYSpeed = 4;
-
-        int ComputerSpeedChange = 50;
-        // Velocidad aleatoria de la pelota
-        private Random rdm = new Random();
-
-        // Variables de control de movimiento
+        private int computerSpeedChange = 50;
+        private Random random = new Random();
         private bool goDown;
         private bool goUp;
-
-        // Puntaje y velocidad del jugador y de la IA
         private int player1Score = 0;
         private int playerSpeed = 8;
         private int pcScore = 0;
-
-        // Configuración de las velocidades de la IA
         private int[] i = { 5, 6, 8, 9 };
         private int[] j = { 10, 9, 8, 11, 12 };
+        private int speed = 5;
 
         public Form1()
         {
@@ -30,12 +22,65 @@ namespace PingPong
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            // TODO: Add any initialization logic here
         }
 
         private void GameTimerEvent(object sender, EventArgs e)
         {
+            Pelota.Top += ballYSpeed;
+            Pelota.Left += ballXSpeed;
 
+            this.Text = "Score Jugador: " + player1Score + " Score IA: " + pcScore;
+
+            if (Pelota.Top < 0 || Pelota.Bottom > this.ClientSize.Height)
+                ballYSpeed = -ballYSpeed;
+
+            if (Pelota.Left < 2)
+            {
+                Pelota.Left = 300;
+                ballXSpeed = -ballXSpeed;
+                pcScore++;
+            }
+
+            if (Pelota.Right > this.ClientSize.Width - 2)
+            {
+                Pelota.Left = 300;
+                ballXSpeed = -ballXSpeed;
+                player1Score++;
+            }
+
+            if (IA.Top < -1)
+                IA.Top = 0;
+            else if (IA.Bottom > this.ClientSize.Height)
+                IA.Top = this.ClientSize.Height - IA.Height;
+
+            if (Pelota.Top < IA.Top + (IA.Height / 2) && Pelota.Left > 300)
+                IA.Top -= speed;
+
+            if (Pelota.Top > IA.Top + (IA.Height / 2) && Pelota.Left > 300)
+                IA.Top += speed;
+
+            computerSpeedChange--;
+
+            if (computerSpeedChange < 0)
+            {
+                speed = i[random.Next(i.Length)];
+                computerSpeedChange = 50;
+            }
+
+            if (goDown && Jugador.Top + Jugador.Height < this.ClientSize.Height)
+                Jugador.Top += playerSpeed;
+
+            if (goUp && Jugador.Top > 0)
+                Jugador.Top -= playerSpeed;
+
+            CheckCollision(Pelota, Jugador, Jugador.Right + 5);
+            CheckCollision(Pelota, IA, IA.Left - 35);
+
+            if (pcScore > 5)
+                GameOver("¡Has perdido!");
+            else if (player1Score > 5)
+                GameOver("¡Has ganado!");
         }
 
         private void KeyIsDown(object sender, KeyEventArgs e)
@@ -62,18 +107,11 @@ namespace PingPong
             {
                 picOne.Left = offset;
 
-                int x = i[rdm.Next(i.Length)];
-                int y = j[rdm.Next(j.Length)];
+                int x = i[random.Next(i.Length)];
+                int y = j[random.Next(j.Length)];
 
-                if (ballXSpeed < 0)
-                    ballXSpeed = x;
-                else
-                    ballXSpeed = -x;
-
-                if (ballYSpeed < 0)
-                    ballYSpeed = -y;
-                else
-                    ballYSpeed = y;
+                ballXSpeed = ballXSpeed < 0 ? x : -x;
+                ballYSpeed = ballYSpeed < 0 ? -y : y;
             }
         }
 
@@ -84,7 +122,7 @@ namespace PingPong
             pcScore = 0;
             player1Score = 0;
             ballXSpeed = ballYSpeed = 4;
-            ComputerSpeedChange = 50;
+            computerSpeedChange = 50;
             Temporizador.Start(); // Reiniciar el juego
         }
     }
