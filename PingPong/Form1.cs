@@ -22,7 +22,6 @@ namespace PingPong
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            // TODO: Add any initialization logic here
         }
 
         private void GameTimerEvent(object sender, EventArgs e)
